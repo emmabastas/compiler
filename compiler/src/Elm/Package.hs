@@ -11,7 +11,7 @@ module Elm.Package
   , toFilePath
   , toJsonString
   --
-  , dummyName, kernel, core
+  , dummyName, kernel, core, elmNodeCliCore
   , browser, virtualDom, html
   , json, http, url
   , webgl, linearAlgebra
@@ -129,6 +129,12 @@ kernel =
 core :: Name
 core =
   toName elm "core"
+
+
+{-# NOINLINE elmNodeCliCore #-}
+elmNodeCliCore :: Name
+elmNodeCliCore =
+  toName emmabastas "elm-node-cli-core"
 
 
 {-# NOINLINE browser #-}

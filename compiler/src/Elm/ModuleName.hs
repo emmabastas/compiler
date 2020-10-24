@@ -12,7 +12,7 @@ module Elm.ModuleName
   , Canonical(..)
   , basics, char, string
   , maybe, result, list, array, dict, tuple
-  , platform, cmd, sub
+  , nodeCli, platform, cmd, sub
   , debug
   , virtualDom
   , jsonDecode, jsonEncode
@@ -209,6 +209,11 @@ tuple = Canonical Pkg.core Name.tuple
 {-# NOINLINE platform #-}
 platform :: Canonical
 platform = Canonical Pkg.core Name.platform
+
+
+{-# NOINLINE nodeCli #-}
+nodeCli :: Canonical
+nodeCli = Canonical Pkg.elmNodeCliCore "NodeCli"
 
 
 {-# NOINLINE cmd #-}
