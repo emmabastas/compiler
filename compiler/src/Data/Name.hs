@@ -578,7 +578,7 @@ program = fromChars "Program"
 
 {-# NOINLINE _main #-}
 _main :: Name
-_main = fromChars "main"
+_main = fromChars "mainCli"
 
 
 {-# NOINLINE _Main #-}

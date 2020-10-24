@@ -54,7 +54,7 @@ generate mode (Opt.GlobalGraph graph _) mains =
 
 addMain :: Mode.Mode -> Graph -> ModuleName.Canonical -> Opt.Main -> State -> State
 addMain mode graph home _ state =
-  addGlobal mode graph state (Opt.Global home "main")
+  addGlobal mode graph state (Opt.Global home Name._main)
 
 
 perfNote :: Mode.Mode -> B.Builder
