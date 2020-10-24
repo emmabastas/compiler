@@ -46,7 +46,6 @@ module Reporting.Doc
 
 import Prelude hiding (cycle)
 import qualified Data.List as List
-import Data.Monoid ((<>))
 import qualified Data.Name as Name
 import qualified System.Console.ANSI.Types as Ansi
 import qualified System.Info as Info

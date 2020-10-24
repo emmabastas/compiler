@@ -19,7 +19,7 @@ import qualified Elm.Magnitude as M
 import qualified Elm.Outline as Outline
 import qualified Elm.Version as V
 import qualified Http
-import Reporting.Doc ((<>), (<+>))
+import Reporting.Doc ((<+>))
 import qualified Reporting
 import qualified Reporting.Doc as D
 import qualified Reporting.Exit as Exit
