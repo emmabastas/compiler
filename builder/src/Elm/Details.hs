@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE BangPatterns, OverloadedStrings #-}
+{-# LANGUAGE BangPatterns, OverloadedStrings, DoAndIfThenElse #-}
 module Elm.Details
   ( Details(..)
   , BuildID
@@ -44,6 +44,7 @@ import qualified Elm.Constraint as Con
 import qualified Elm.Docs as Docs
 import qualified Elm.Interface as I
 import qualified Elm.Kernel as Kernel
+import qualified Elm.BundeledKernel as BundeledKernel
 import qualified Elm.ModuleName as ModuleName
 import qualified Elm.Outline as Outline
 import qualified Elm.Package as Pkg
@@ -619,6 +620,7 @@ crawlKernel :: Map.Map ModuleName.Raw ForeignInterface -> MVar StatusDict -> Pkg
 crawlKernel foreignDeps mvar pkg src name =
   do  let path = src </> ModuleName.toFilePath name <.> "js"
       exists <- File.exists path
+      let existsBundeled = BundeledKernel.exists name
       if exists
         then
           do  bytes <- File.readUtf8 path
@@ -629,8 +631,20 @@ crawlKernel foreignDeps mvar pkg src name =
                 Just (Kernel.Content imports chunks) ->
                   do  _ <- crawlImports foreignDeps mvar pkg src imports
                       return (Just (SKernelLocal chunks))
-        else
-          return (Just SKernelForeign)
+
+      else if existsBundeled
+        then
+          let bytes = Maybe.fromJust (BundeledKernel.load name) in
+          case Kernel.fromByteString pkg (Map.mapMaybe getDepHome foreignDeps) bytes of
+            Nothing ->
+              return Nothing
+
+            Just (Kernel.Content imports chunks) ->
+              do  _ <- crawlImports foreignDeps mvar pkg src imports
+                  return (Just (SKernelLocal chunks))
+
+      else
+        return (Just SKernelForeign)
 
 
 getDepHome :: ForeignInterface -> Maybe Pkg.Name

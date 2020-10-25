@@ -99,6 +99,7 @@ Executable elm
         Elm.Float
         Elm.Interface
         Elm.Kernel
+        Elm.BundeledKernel
         Elm.Licenses
         Elm.Magnitude
         Elm.ModuleName

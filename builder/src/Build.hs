@@ -44,6 +44,7 @@ import qualified Elm.Interface as I
 import qualified Elm.ModuleName as ModuleName
 import qualified Elm.Outline as Outline
 import qualified Elm.Package as Pkg
+import qualified Elm.BundeledKernel as BundeledKernel
 import qualified File
 import qualified Json.Encode as E
 import qualified Parse.Module as Parse
@@ -303,8 +304,17 @@ crawlModule env@(Env _ root projectType srcDirs buildID locals foreigns) mvar do
 
             Nothing ->
               if Name.isKernel name && Parse.isKernel projectType then
-                do  exists <- File.exists ("src" </> ModuleName.toFilePath name <.> "js")
-                    return $ if exists then SKernel else SBadImport Import.NotFound
+                do
+                  exists <- File.exists ("src" </> ModuleName.toFilePath name <.> "js")
+                  let existsBundeled = BundeledKernel.exists name
+
+                  return $ if exists
+                    then SKernel
+                    else
+                      if existsBundeled
+                        then
+                          SKernel
+                          else SBadImport Import.NotFound
               else
                 return $ SBadImport Import.NotFound
 
