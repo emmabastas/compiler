@@ -27,6 +27,7 @@ import qualified Canonicalize.Type as Type
 import qualified Data.Index as Index
 import qualified Elm.ModuleName as ModuleName
 import qualified Elm.Package as Pkg
+import qualified Elm.String as ES
 import qualified Reporting.Annotation as A
 import qualified Reporting.Error.Canonicalize as Error
 import qualified Reporting.Result as Result
@@ -110,9 +111,9 @@ canonicalize env (A.At region expression) =
           return (Can.Lambda args cbody, freeLocals)
 
     Src.Call func args ->
-      Can.Call
-        <$> canonicalize env func
-        <*> traverse (canonicalize env) args
+      do  cFunc <- canonicalize env func
+          cArgs <- traverse (canonicalize env) args
+          findCall cFunc cArgs
 
     Src.If branches finally ->
       Can.If
@@ -759,3 +760,28 @@ toVarCtor name ctor =
         freeVars = Map.fromList (map (\v -> (v, ())) vars)
       in
       Can.VarCtor Can.Normal home name Index.first (Can.Forall freeVars tipe)
+
+
+
+-- FIND FUNCTION CALL
+
+
+findCall :: Can.Expr -> [Can.Expr] -> Result FreeLocals w Can.Expr_
+findCall func args =
+  case (func, args) of
+    ( A.At _ (Can.VarForeign hm n _)
+      , [ A.At r (Can.Str s1)
+        , A.At _ (Can.Str s2)
+        ]
+      ) | hm == ModuleName.nodeCliKernel && n == Name.kernelFunction ->
+      let
+        kernelModule = Name.fromChars $ ES.toChars s1
+        kernelName = Name.fromChars $ ES.toChars s2
+      in
+      if Name.isKernel kernelModule then
+        Result.ok $ Can.VarKernel (Name.getKernel kernelModule) kernelName
+      else
+        Result.throw (Error.BadKernelCallModule r)
+
+    _ ->
+      Result.ok (Can.Call func args)

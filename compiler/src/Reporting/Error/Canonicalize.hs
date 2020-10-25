@@ -44,6 +44,7 @@ data Error
   | AmbiguousVariant A.Region (Maybe Name.Name) Name.Name ModuleName.Canonical (OneOrMore.OneOrMore ModuleName.Canonical)
   | AmbiguousBinop A.Region Name.Name ModuleName.Canonical (OneOrMore.OneOrMore ModuleName.Canonical)
   | BadArity A.Region BadArityContext Name.Name Int Int
+  | BadKernelCallModule A.Region
   | Binop A.Region Name.Name Name.Name
   | DuplicateDecl Name.Name A.Region A.Region
   | DuplicateType Name.Name A.Region A.Region
@@ -210,6 +211,13 @@ toReport source err =
               else
                 "Which are the extra ones? Maybe some parentheses are missing?"
             )
+
+    BadKernelCallModule modul ->
+      Report.Report "BAD KERNEL CALL MODULE" modul [] $
+        Code.toSnippet source modul Nothing
+          ( D.reflow $ "`" <> Name.toChars Name.kernelFunction <> "` needs the first argument to be a valid kernel module"
+          , "A valid kernel module always begins with `Elm.Kernel`"
+          )
 
     Binop region op1 op2 ->
       Report.Report "INFIX PROBLEM" region [] $

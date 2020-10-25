@@ -12,7 +12,8 @@ module Elm.ModuleName
   , Canonical(..)
   , basics, char, string
   , maybe, result, list, array, dict, tuple
-  , nodeCli, platform, cmd, sub
+  , platform, cmd, sub
+  , nodeCli, nodeCliKernel
   , debug
   , virtualDom
   , jsonDecode, jsonEncode
@@ -214,6 +215,11 @@ platform = Canonical Pkg.core Name.platform
 {-# NOINLINE nodeCli #-}
 nodeCli :: Canonical
 nodeCli = Canonical Pkg.elmNodeCliCore "NodeCli"
+
+
+{-# NOINLINE nodeCliKernel#-}
+nodeCliKernel :: Canonical
+nodeCliKernel = Canonical Pkg.elmNodeCliCore "NodeCli.Kernel"
 
 
 {-# NOINLINE cmd #-}

@@ -32,6 +32,7 @@ module Data.Name
   , utils, negate, true, false, value
   , node, program, _main, _Main, dollar, identity
   , replModule, replValueToPrint
+  , kernelFunction
   )
   where
 
@@ -604,3 +605,8 @@ replModule = fromChars "Elm_Repl"
 {-# NOINLINE replValueToPrint #-}
 replValueToPrint :: Name
 replValueToPrint = fromChars "repl_input_value_"
+
+
+{-# NOINLINE kernelFunction #-}
+kernelFunction :: Name
+kernelFunction = fromChars "kernelFunction"
