@@ -15,6 +15,7 @@ import qualified Data.Map.Strict as Map
 import System.FilePath ((<.>))
 import qualified System.FilePath as FP
 import Data.FileEmbed
+import Control.Exception (assert)
 
 
 modules :: Map.Map FilePath BS.ByteString
@@ -23,29 +24,32 @@ modules = Map.fromList $ $(embedDir "compiler/src/Elm/BundeledKernel")
 
 toFilePath :: ModuleName.Raw -> FilePath
 toFilePath moduleName =
-  ModuleName.toFilePath moduleName <.> "js"
+  assert (Name.isKernel moduleName)
+  (ModuleName.toFilePath (Name.getKernel moduleName) <.> "js")
 
 
 exists :: ModuleName.Raw -> Bool
 exists moduleName =
-  Map.member (toFilePath moduleName) modules
+  if Name.isKernel moduleName then
+    Map.member (toFilePath moduleName) modules
+  else
+    False
 
 
 load :: ModuleName.Raw -> Maybe BS.ByteString
 load moduleName =
-  Map.lookup (toFilePath moduleName) modules
+  if Name.isKernel moduleName then
+    Map.lookup (toFilePath moduleName) modules
+  else
+    Nothing
 
 
 moduleNames :: [ModuleName.Canonical]
 moduleNames =
-  let
-    repl '/' = '.'
-    repl c = c
-  in
   fmap
     (\(filePath, _) ->
       ModuleName.Canonical
         Pkg.kernel
-        (Name.fromChars (map repl $ FP.dropExtension filePath))
+        (Name.fromChars ("Elm.Kernel." ++ FP.dropExtension filePath))
     )
     (Map.toList modules)
