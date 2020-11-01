@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Elm.Compiler.Imports
   ( defaults
+  , nodeCliDefaults
   )
   where
 
@@ -10,6 +11,7 @@ import qualified Data.Name as Name
 
 import qualified AST.Source as Src
 import qualified Elm.ModuleName as ModuleName
+import qualified Elm.BundeledKernel as BundeledKernel
 import qualified Reporting.Annotation as A
 
 
@@ -31,6 +33,14 @@ defaults =
   , import_ ModuleName.cmd (Just Name.cmd) (typeClosed Name.cmd)
   , import_ ModuleName.sub (Just Name.sub) (typeClosed Name.sub)
   ]
+
+
+nodeCliDefaults :: [Src.Import]
+nodeCliDefaults =
+  fmap
+    (\mn -> import_ mn Nothing closed)
+    BundeledKernel.moduleNames
+  ++ defaults
 
 
 import_ :: ModuleName.Canonical -> Maybe Name.Name -> Src.Exposing -> Src.Import

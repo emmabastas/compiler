@@ -6,12 +6,13 @@ module Elm.Package
   , Project
   , Canonical(..)
   , isKernel
+  , isNodeCli
   , toChars
   , toUrl
   , toFilePath
   , toJsonString
   --
-  , dummyName, kernel, core, elmNodeCliCore
+  , dummyName, kernel, core, emmabastas, elmNodeCliCore
   , browser, virtualDom, html
   , json, http, url
   , webgl, linearAlgebra
@@ -80,8 +81,13 @@ data Canonical =
 
 
 isKernel :: Name -> Bool
-isKernel (Name author _) =
-  author == elm || author == elm_explorations || author == emmabastas
+isKernel name@(Name author _) =
+  author == elm || author == elm_explorations || isNodeCli name
+
+
+isNodeCli :: Name -> Bool
+isNodeCli (Name author _) =
+  author == emmabastas
 
 
 toChars :: Name -> String

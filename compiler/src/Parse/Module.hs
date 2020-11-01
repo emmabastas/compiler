@@ -61,6 +61,13 @@ isKernel projectType =
     Application -> False
 
 
+isNodeCli :: ProjectType -> Bool
+isNodeCli projectType =
+  case projectType of
+    Package pkg -> Pkg.isNodeCli pkg
+    Application -> False
+
+
 
 -- MODULE
 
@@ -77,7 +84,14 @@ data Module =
 chompModule :: ProjectType -> Parser E.Module Module
 chompModule projectType =
   do  header <- chompHeader
-      imports <- chompImports (if isCore projectType then [] else Imports.defaults)
+      imports <- chompImports
+        ( if isCore projectType then
+            []
+          else if isNodeCli projectType then
+            Imports.nodeCliDefaults
+          else
+            Imports.defaults
+        )
       infixes <- if isKernel projectType then chompInfixes [] else return []
       decls <- specialize E.Declarations $ chompDecls []
       return (Module header imports infixes decls)
