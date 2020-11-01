@@ -44,12 +44,10 @@ generate mode (Opt.GlobalGraph graph _) mains =
   let
     state = Map.foldrWithKey (addMain mode graph) emptyState mains
   in
-  "(function(scope){\n'use strict';"
-  <> Functions.functions
+  Functions.functions
   <> perfNote mode
   <> stateToBuilder state
   <> toMainExports mode mains
-  <> "}(this));"
 
 
 addMain :: Mode.Mode -> Graph -> ModuleName.Canonical -> Opt.Main -> State -> State
@@ -503,10 +501,9 @@ generateManagerHelp home effectsType =
 toMainExports :: Mode.Mode -> Mains -> B.Builder
 toMainExports mode mains =
   let
-    export = JsName.fromKernel Name.platform "export"
     exports = generateExports mode (Map.foldrWithKey addToTrie emptyTrie mains)
   in
-  JsName.toBuilder export <> "(" <> exports <> ");"
+  "module.exports = " <> exports <> ";"
 
 
 generateExports :: Mode.Mode -> Trie -> B.Builder

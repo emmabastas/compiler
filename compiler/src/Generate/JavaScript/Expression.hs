@@ -1039,12 +1039,12 @@ generateMain mode home main =
   case main of
     Opt.Static ->
       JS.Ref (JsName.fromKernel Name.virtualDom "init")
-        # JS.Ref (JsName.fromGlobal home "main")
+        # JS.Ref (JsName.fromGlobal home Name._main)
         # JS.Int 0
         # JS.Int 0
 
     Opt.Dynamic msgType decoder ->
-      JS.Ref (JsName.fromGlobal home "main")
+      JS.Ref (JsName.fromGlobal home Name._main)
         # generateJsExpr mode decoder
         # toDebugMetadata mode msgType
 
